@@ -8,6 +8,10 @@ RUN npm install
 
 COPY . .
 
+COPY ./seed.sh /seed.sh
+
+RUN chmod +x /seed.sh
+
 EXPOSE 3000
 
-CMD [ "npm", "run", "start" ]
+ENTRYPOINT [ "/seed.sh" ]
