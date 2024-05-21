@@ -1,6 +1,6 @@
 # Containerization & Linux 2024
 
-## Maskine setup
+## Node setup
 
 ### Step 1: Update packagelist and upgrade packages
 
@@ -80,19 +80,78 @@ docker swarm join --token $SWARM_INIT_TOKEN $MANAGER_IP:2377
 docker node ls
 ```
 
-4. Clone project onto manager node
+## Build and deploy the project
+
+### Step 1 build and push images to docker hub
+
+1. Log in to docker hub
 
 ```sh
-git clone https://github.com/frann0/cl-eksamen && cd cl-eksamen
+docker login
 ```
 
-5. Deploy stack on cluster
+2. create a Dockerfile for the frontend
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Dockerfile frontend](https://github.com/KasperPtak/WUOE23-CL-exam/blob/main/frontend/Dockerfile)
+
+3. build and push to docker hub
+
+&nbsp;&nbsp;&nbsp;&nbsp;Make sure you're in the right directory
+
+```sh
+cd frontend
+```
+
+```sh
+docker build -t kasperptak/cl-exam-frontend
+```
+
+```sh
+docker push kasperptak/cl-exam-frontend
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;[link to image on the hub](https://hub.docker.com/repository/docker/kasperptak/cl-exam-frontend/general)
+
+4. create dockerfile for the backend
+
+&nbsp;&nbsp;&nbsp;&nbsp;[Dockerfile backend](https://github.com/KasperPtak/WUOE23-CL-exam/blob/main/backend/Dockerfile)
+
+5. push to docker hub
+
+```sh
+cd backend
+```
+
+```sh
+docker build -t kasperptak/cl-exam-backend
+```
+
+```sh
+docker push kasperptak/cl-exam-backend
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;[link to image on the hub](https://hub.docker.com/repository/docker/kasperptak/cl-exam-backend/general)
+
+<br>
+### Step 2 create & deploy project on cluster
+
+1. create the docker-compose
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docker-compose.yml](https://github.com/KasperPtak/WUOE23-CL-exam/blob/main/docker-compose.yaml)
+
+2. Clone project onto manager node
+
+```sh
+git clone https://github.com/KasperPtak/WUOE23-CL-exam && cd WUOE23-CL-exam 
+```
+
+3. Deploy stack on cluster
 
 ```sh
 docker stack deploy --compose-file docker-compose.yml cl-eksamen-stack
 ```
 
-6. Check stack deployment status
+4. Check stack deployment status
 
 ```sh
 docker stack services cl-eksamen-stack
