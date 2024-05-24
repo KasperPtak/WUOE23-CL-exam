@@ -1,5 +1,6 @@
 # Containerization & Linux 2024
-
+In this project, we were tasked to containerize 2 projects, a vue frontend and an expressJS backend, and deploy it on 3 computers using some container orchestration tool.
+To do this, 3 computers were given, running a bare install of ubuntu 22.04 LTS with out any desktop environment. This forces the use of the CLI to install docker and utilize it to build images and run a docker swarm cluster and manage permissions and groups. 
 ## Node setup
 
 ### Step 1: Update packagelist and upgrade packages
@@ -74,12 +75,17 @@ docker swarm init
 docker swarm join --token $SWARM_INIT_TOKEN $MANAGER_IP:2377
 ```
 
-3. Confirm nodes status on manager node
-
+To test if the swarm is configured and all nodes are on the same cluster we can use:
 ```sh
 docker node ls
 ```
-
+It should give an output looking something like: 
+```sh
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+8w2v5dzgj83yzetlj2o36xgol *   node01     Ready     Active         Leader           26.1.2
+vinimxsizzqo2twqkx5gnm3wy     node02     Ready     Active                          26.1.2
+lzxqeqk3bidoz5g3j301at4ss     node03     Ready     Active                          26.1.2
+```
 ## Build and deploy the project
 
 ### Step 1 build and push images to docker hub
@@ -132,7 +138,6 @@ docker push kasperptak/cl-exam-backend
 
 &nbsp;&nbsp;&nbsp;&nbsp;[link to image on the hub](https://hub.docker.com/repository/docker/kasperptak/cl-exam-backend/general)
 
-<br>
 ### Step 2 create & deploy project on cluster
 
 1. create the docker-compose
@@ -151,8 +156,16 @@ git clone https://github.com/KasperPtak/WUOE23-CL-exam && cd WUOE23-CL-exam
 docker stack deploy --compose-file docker-compose.yml cl-eksamen-stack
 ```
 
-4. Check stack deployment status
+To test if the stack were successfully deployed, we can use:
 
 ```sh
 docker stack services cl-eksamen-stack
 ```
+It should give an output looking like this:
+```sh
+ID             NAME               MODE         REPLICAS   IMAGE                                PORTS
+58olu8b6msbm   cl-exam_backend    replicated   2/2        kasperptak/cl-exam-backend:latest    *:3000->3000/tcp
+j303jrlclehz   cl-exam_db         replicated   1/1        mysql:latest                         *:3306->3306/tcp
+rfp9es9m7yve   cl-exam_frontend   replicated   2/2        kasperptak/cl-exam-frontend:latest   *:5173->5173/tcp
+```
+Which displays the replication status of each service, which image it is using, and which ports are exposed.
