@@ -10,7 +10,7 @@ services:
     deploy: 
       placement: 
         constraints: [ node.role == worker ]
-      replicas: 4
+      replicas: 2
       mode: replicated
 
   backend:
@@ -22,7 +22,7 @@ services:
     deploy: 
       placement: 
         constraints: [ node.role == worker ]
-      replicas: 4
+      replicas: 2
       mode: replicated
     environment:
       - DB_HOSTNAME=db
